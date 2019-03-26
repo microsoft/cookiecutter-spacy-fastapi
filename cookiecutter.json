@@ -1,0 +1,5 @@
+{
+    "project_name": "Python Azure Search Cognitive Skill API",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "project_short_description": "Python API that for Custom Cognitive Skills in Azure Search"
+}

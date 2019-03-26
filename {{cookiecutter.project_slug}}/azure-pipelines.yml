@@ -1,0 +1,22 @@
+trigger:
+  batch: true
+  branches:
+    include: 
+      - master
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+steps:
+- script: |
+    docker build . -t {{cookiecutter.project_slug}}
+  displayName: Build Docker Container
+- script: |
+    DOCKER_IMAGE=$(docker images -q | sed 1q)
+    docker run -i "$DOCKER_IMAGE" /bin/bash -c "black ./app --check"
+  displayName: Lint with Black
+  continueOnError: true
+- script: |
+    DOCKER_IMAGE=$(docker images -q | sed 1q)
+    docker run -i -v junit:/usr/src "$DOCKER_IMAGE" /bin/bash -c "pytest app/tests --doctest-modules --junitxml=junit/test-results.xml --cov --cov-report=xml --cov-report=html"
+  displayName: Test with pytest

@@ -1,0 +1,7 @@
+fastapi
+requests
+uvicorn
+python-dotenv
+pytest
+pytest-cov
+black
