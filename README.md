@@ -1,11 +1,11 @@
-## Python cookiecutter API based `FastAPI` for developing a Custom Cognitive Skill for Azure Search
+# Python cookiecutter API for developing a Custom Cognitive Skill for Azure Search
 
 ## Azure Search
 For instructions on adding your API as a Custom Cognitive Skill in Azure Search see:
 https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface
 
 ## FastAPI
-FastAPI Documentation and User Guide: https://fastapi.tiangolo.com
+This sample is based on the FastAPI Web Framework. Documentation and User Guide: https://fastapi.tiangolo.com
 
 ## Requirements
 - Python >= 3.6 with pip installed
