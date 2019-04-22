@@ -10,7 +10,7 @@ from starlette.responses import RedirectResponse
 import spacy
 import uvicorn
 
-from app.models import AzureSearchDocumentsRequest, AzureSearchDocumentsResponse
+from app.models import RecordsRequest, RecordsResponse
 
 
 load_dotenv(find_dotenv())
@@ -51,11 +51,11 @@ def docs_redirect():
 
 @app.post(
     "/spacy_entities",
-    response_model=AzureSearchDocumentsResponse,
+    response_model=RecordsResponse,
     tags=["NER", "Azure Search"],
 )
-async def extract_for_azure_search(body: AzureSearchDocumentsRequest):
-    """Extract Named Entities from a batch of Azure Search Document Records.
+async def extract_entities(body: RecordsRequest):
+    """Extract Named Entities from a batch of Records.
         This route can be used directly as a Cognitive Skill in Azure Search
         For Documentation on integration with Azure Search, see here:
         https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface"""
