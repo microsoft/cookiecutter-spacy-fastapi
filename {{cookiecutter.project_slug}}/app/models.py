@@ -23,11 +23,15 @@ class RecordDataResponse(BaseModel):
     entities: List[str]
 
 
+class Message(BaseModel):
+    message: str
+
+
 class RecordResponse(BaseModel):
     recordId: str
     data: RecordDataResponse
-    errors: Optional[List[str]]
-    warnings: Optional[List[str]]
+    errors: Optional[List[Message]]
+    warnings: Optional[List[Message]]
 
 
 class RecordsResponse(BaseModel):
