@@ -26,6 +26,9 @@ uvicorn app.api:app --reload
 ```
 Open your browser to http://localhost:8000/docs to view the OpenAPI UI.
 
+![Open API Image](./images/cookiecutter-docs.png)
+
+
 For an alternate view of the docs navigate to http://localhost:8000/redoc
 
 ---

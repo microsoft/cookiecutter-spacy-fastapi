@@ -34,7 +34,8 @@ app = FastAPI(
     openapi_prefix=prefix,
 )
 
-nlp = spacy.load("{{cookiecutter.project_language}}")
+# nlp = spacy.load("{{cookiecutter.project_language}}")
+nlp = spacy.load("en_core_web_sm")
 extractor = SpacyExtractor(nlp)
 
 
