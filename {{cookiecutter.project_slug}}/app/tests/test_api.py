@@ -21,17 +21,8 @@ def test_api():
     software, which runs on its Echo and Dot devices, have clear leads in
     consumer adoption."""
 
-
     request_data = {
-        "values": [
-            {
-                "recordId": "a1",
-                "data": {
-                    "text": text,
-                    "language": "en"
-                }
-            }
-        ]
+        "values": [{"recordId": "a1", "data": {"text": text, "language": "en"}}]
     }
 
     response = client.post("/spacy_entities", json=request_data)
@@ -49,5 +40,5 @@ def test_api():
         "Echo and Dot",
         "Google",
         "iPhones",
-        "Siri"
+        "Siri",
     ]

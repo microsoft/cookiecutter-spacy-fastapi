@@ -22,7 +22,7 @@ To run locally in debug mode run:
 
 ```
 cd ./{{cookiecutter.project_slug}}
-uvicorn app.api:app --debug
+uvicorn app.api:app --reload
 ```
 Open your browser to http://localhost:8000/docs to view the SwaggerUI.
 

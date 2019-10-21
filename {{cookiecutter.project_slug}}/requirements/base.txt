@@ -1,7 +1,8 @@
-fastapi
-requests
-uvicorn
-python-dotenv
-pytest
-pytest-cov
-black
+spacy==2.2.0
+fastapi==0.42.0
+requests==2.22.0
+uvicorn==0.9.1
+python-dotenv==0.10.3
+pytest==5.2.1
+pytest-cov==2.8.1
+black==19.3b0

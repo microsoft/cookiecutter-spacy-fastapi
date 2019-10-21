@@ -1,22 +1,111 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
 trigger:
-  batch: true
-  branches:
-    include: 
-      - master
+- master
 
-pool:
-  vmImage: 'ubuntu-16.04'
+resources:
+- repo: self
 
-steps:
-- script: |
-    docker build . -t {{cookiecutter.project_slug}}
-  displayName: Build Docker Container
-- script: |
-    DOCKER_IMAGE=$(docker images -q | sed 1q)
-    docker run -i "$DOCKER_IMAGE" /bin/bash -c "black ./app --check"
-  displayName: Lint with Black
-  continueOnError: true
-- script: |
-    DOCKER_IMAGE=$(docker images -q | sed 1q)
-    docker run -i -v junit:/usr/src "$DOCKER_IMAGE" /bin/bash -c "pytest app/tests --doctest-modules --junitxml=junit/test-results.xml --cov --cov-report=xml --cov-report=html"
-  displayName: Test with pytest
+variables:
+
+  # Container registry service connection established during pipeline creation
+  
+  # See: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-docreg
+  dockerRegistryServiceConnection: 'yourDockerRegistryServiceConnectionGUID' 
+  imageRepository: 'yourImageRepositoryName'
+  containerRegistry: 'yourContainerRegistryName.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+  
+  # Kubernetes Namespace
+  k8sNamespace: 'default'
+  imagePullSecret: 'yourImagePullSecretName-auth'
+
+  # See: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/environments-kubernetes?view=azure-devops
+  envName: 'yourEnvName-cluster.default'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build job
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build image
+      inputs:
+        command: build
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+    - script: |
+        DOCKER_IMAGE=$(docker images -q | sed 1q)
+        docker run -i "$DOCKER_IMAGE" /bin/bash -c "black ./app --check"
+      displayName: Run black check
+    - script: |
+        DOCKER_IMAGE=$(docker images -q | sed 1q)
+        docker run -i -v junit:/app/junit "$DOCKER_IMAGE" /bin/bash -c "pytest app/tests --doctest-modules --junitxml=junit/test-results.xml --cov --cov-report=xml --cov-report=html"
+      displayName: Test with pytest
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: 'junit/test-results.xml'
+        testRunTitle: 'Publish test results'
+    - task: Docker@2
+      displayName: Push image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'manifests'
+        targetPath: 'manifests'
+
+- stage: Deploy_BVT
+  displayName: Deploy BVT
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy_BVT
+    pool:
+      vmImage: $(vmImageName)
+    environment: '$(envName)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadPipelineArtifact@1
+            inputs:
+              artifactName: 'manifests'
+              downloadPath: '$(System.ArtifactsDirectory)/manifests'
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              namespace: $(k8sNamespace)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              namespace: $(k8sNamespace)
+              manifests: |
+                $(System.ArtifactsDirectory)/manifests/deployment.yml
+                $(System.ArtifactsDirectory)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
