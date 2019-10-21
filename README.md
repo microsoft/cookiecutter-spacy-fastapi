@@ -1,6 +1,10 @@
-# Python cookiecutter API for developing a Custom Cognitive Skill for Azure Search
+# cookiecutter-spacy-fastapi
+
+Python cookiecutter API for quick deployments of spaCy models with FastAPI
 
 ## Azure Search
+The API interface is compatible with Azure Search Cognitive Skills.
+
 For instructions on adding your API as a Custom Cognitive Skill in Azure Search see:
 https://docs.microsoft.com/en-us/azure/search/cognitive-search-custom-skill-interface
 
