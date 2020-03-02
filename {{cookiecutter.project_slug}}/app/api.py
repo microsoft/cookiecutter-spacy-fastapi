@@ -21,10 +21,7 @@ from app.spacy_extractor import SpacyExtractor
 
 
 load_dotenv(find_dotenv())
-prefix = os.getenv("CLUSTER_ROUTE_PREFIX")
-if not prefix:
-    prefix = ""
-prefix = prefix.rstrip("/")
+prefix = os.getenv("CLUSTER_ROUTE_PREFIX", "").rstrip("/")
 
 
 app = FastAPI(
@@ -37,28 +34,6 @@ app = FastAPI(
 # nlp = spacy.load("{{cookiecutter.project_language}}")
 nlp = spacy.load("en_core_web_sm")
 extractor = SpacyExtractor(nlp)
-
-
-ENT_PROP_MAP = {
-    "CARDINAL": "cardinals",
-    "DATE": "dates",
-    "EVENT": "events",
-    "FAC": "facilities",
-    "GPE": "gpes",
-    "LANGUAGE": "languages",
-    "LAW": "laws",
-    "LOC": "locations",
-    "MONEY": "money",
-    "NORP": "norps",
-    "ORDINAL": "ordinals",
-    "ORG": "organizations",
-    "PERCENT": "percentages",
-    "PERSON": "people",
-    "PRODUCT": "products",
-    "QUANTITY": "quanities",
-    "TIME": "times",
-    "WORK_OF_ART": "worksOfArt",
-}
 
 
 @app.get("/", include_in_schema=False)
@@ -77,7 +52,6 @@ async def extract_entities(body: RecordsRequest):
         documents.append({"id": val.recordId, "text": val.data.text})
 
     entities_res = extractor.extract_entities(documents)
-    print(entities_res)
 
     res = [
         {"recordId": er["id"], "data": {"entities": er["entities"]}}
