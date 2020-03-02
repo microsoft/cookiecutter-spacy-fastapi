@@ -22,6 +22,7 @@ To run locally in debug mode run:
 
 ```
 cd ./{{cookiecutter.project_slug}}
+bash ./create_virtualenv.sh
 uvicorn app.api:app --reload
 ```
 Open your browser to http://localhost:8000/docs to view the OpenAPI UI.
