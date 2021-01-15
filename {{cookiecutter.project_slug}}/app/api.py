@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import spacy
+import srsly
 import uvicorn
 
 from app.models import (
@@ -31,6 +32,8 @@ app = FastAPI(
     openapi_prefix=prefix,
 )
 
+example_request = srsly.read_json("app/data/example_request.json")
+
 nlp = spacy.load("{{cookiecutter.project_language}}")
 extractor = SpacyExtractor(nlp)
 
@@ -41,7 +44,7 @@ def docs_redirect():
 
 
 @app.post("/entities", response_model=RecordsResponse, tags=["NER"])
-async def extract_entities(body: RecordsRequest):
+async def extract_entities(body: RecordsRequest = Body(..., example=example_request)):
     """Extract Named Entities from a batch of Records."""
 
     res = []
@@ -63,7 +66,7 @@ async def extract_entities(body: RecordsRequest):
 @app.post(
     "/entities_by_type", response_model=RecordsEntitiesByTypeResponse, tags=["NER"]
 )
-async def extract_entities_by_type(body: RecordsRequest):
+async def extract_entities_by_type(body: RecordsRequest = Body(..., example=example_request)):
     """Extract Named Entities from a batch of Records separated by entity label.
         This route can be used directly as a Cognitive Skill in Azure Search
         For Documentation on integration with Azure Search, see here:
