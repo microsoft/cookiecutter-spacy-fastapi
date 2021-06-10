@@ -1,5 +1,5 @@
 spacy==2.2.0
-fastapi==0.42.0
+fastapi==0.65.2
 requests==2.22.0
 uvicorn==0.11.7
 python-dotenv==0.10.3
