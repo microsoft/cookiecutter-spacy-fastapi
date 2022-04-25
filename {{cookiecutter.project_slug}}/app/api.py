@@ -5,7 +5,7 @@ from collections import defaultdict
 import os
 
 from dotenv import load_dotenv, find_dotenv
-from fastapi import FastAPI
+from fastapi import Body, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 import spacy
@@ -21,26 +21,21 @@ from app.models import (
 from app.spacy_extractor import SpacyExtractor
 
 
-load_dotenv(find_dotenv())
-prefix = os.getenv("CLUSTER_ROUTE_PREFIX", "").rstrip("/")
-
-
 app = FastAPI(
     title="{{cookiecutter.project_name}}",
     version="1.0",
-    description="{{cookiecutter.project_short_description}}",
-    openapi_prefix=prefix,
+    description="{{cookiecutter.short_description}}",
 )
 
 example_request = srsly.read_json("app/data/example_request.json")
 
-nlp = spacy.load("{{cookiecutter.project_language}}")
+nlp = spacy.load("{{cookiecutter.spacy_model}}")
 extractor = SpacyExtractor(nlp)
 
 
 @app.get("/", include_in_schema=False)
 def docs_redirect():
-    return RedirectResponse(f"{prefix}/docs")
+    return RedirectResponse(f"/docs")
 
 
 @app.post("/entities", response_model=RecordsResponse, tags=["NER"])
