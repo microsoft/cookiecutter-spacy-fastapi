@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Schema
+from pydantic import BaseModel
 
 
 ENT_PROP_MAP = {

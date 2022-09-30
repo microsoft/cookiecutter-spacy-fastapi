@@ -1,6 +1,6 @@
 {
-    "project_name": "Python Azure Search Cognitive Skill API",
+    "project_name": "spaCy FastAPI Azure Cognitive Skill",
     "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
-    "project_short_description": "Python API that for Custom Cognitive Skills in Azure Search",
-    "project_language": "This must be one of spaCy's default languages. See https://spacy.io/usage for a supported list."
+    "short_description": "spaCy FastAPI for Custom Cognitive Skills in Azure Search",
+    "spacy_model": "This must be one of spaCy's default models. See https://spacy.io/usage for a supported list."
 }
